@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мини-приложение</title>
+    <!-- Подключаем SDK Телеграма -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>Добро пожаловать!</h1>
+    <p>Это мини-приложение, загруженное с GitHub.</p>
+    <button id="sendBtn">Отправить данные боту</button>
+
+    <script>
+        // Получаем объект WebApp
+        const tg = window.Telegram.WebApp;
+        // Растягиваем на весь экран
+        tg.expand();
+
+        document.getElementById('sendBtn').addEventListener('click', function () {
+            // Отправляем данные боту (текст или JSON)
+            tg.sendData('Привет от мини-приложения!');
+            // Закрываем окно (опционально)
+            tg.close();
+        });
+    </script>
+</body>
+</html>
