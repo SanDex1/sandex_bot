@@ -1,134 +1,426 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Мои данные</title>
-    <!-- Подключаем SDK Телеграма -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Приглашение на свидание</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            padding: 20px;
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-        }
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 12px 0;
-        }
-        button {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        button:active {
-            opacity: 0.7;
-        }
-        .info-item {
+            background: #f5f0eb;
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-        .label {
+        .container {
+            background: white;
+            max-width: 480px;
+            width: 100%;
+            border-radius: 32px;
+            padding: 28px 24px 32px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2d1b12;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #7a5a4a;
+            font-size: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 16px;
+        }
+        .step {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+        .step.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .question {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d1b12;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .btn {
+            background: #f0ebe7;
+            border: none;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 18px;
             font-weight: 500;
-            opacity: 0.7;
+            color: #2d1b12;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            flex: 1 0 auto;
+            min-width: 100px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .value {
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn img {
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+        }
+        .btn-primary {
+            background: #e84d4d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(232, 77, 77, 0.35);
+        }
+        .btn-primary:active {
+            background: #d43b3b;
+        }
+        .btn-secondary {
+            background: #d4c5bc;
+        }
+        .btn-secondary:active {
+            background: #c4b3a8;
+        }
+        .btn-selected {
+            background: #e84d4d !important;
+            color: white !important;
+        }
+        .btn-selected img {
+            filter: brightness(0) invert(1);
+        }
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #e0d6ce;
+            border-radius: 40px;
+            font-size: 18px;
+            background: #faf8f6;
+            margin: 10px 0 16px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input[type="datetime-local"]:focus {
+            border-color: #e84d4d;
+        }
+        .final-message {
+            background: #fef6f0;
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #2d1b12;
+            border: 2px solid #fadcd0;
+        }
+        .final-message .sub-text {
+            display: block;
+            font-size: 16px;
             font-weight: 400;
-            word-break: break-all;
+            color: #7a5a4a;
+            margin-top: 8px;
+        }
+        .hidden {
+            display: none;
+        }
+        .mt-4 {
+            margin-top: 24px;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <h1>📊 Ваши данные</h1>
-    <div class="card" id="dataDisplay">
-        <!-- сюда будем выводить информацию перед отправкой -->
-        <div class="info-item"><span class="label">Telegram ID</span><span class="value" id="tgId">-</span></div>
-        <div class="info-item"><span class="label">Username</span><span class="value" id="tgUsername">-</span></div>
-        <div class="info-item"><span class="label">Имя</span><span class="value" id="tgFirstName">-</span></div>
-        <div class="info-item"><span class="label">Фамилия</span><span class="value" id="tgLastName">-</span></div>
-        <div class="info-item"><span class="label">Язык</span><span class="value" id="tgLang">-</span></div>
-        <div class="info-item"><span class="label">Premium</span><span class="value" id="tgPremium">-</span></div>
-        <div class="info-item"><span class="label">Платформа</span><span class="value" id="tgPlatform">-</span></div>
-        <div class="info-item"><span class="label">IP-адрес</span><span class="value" id="ipAddress">⏳ загрузка...</span></div>
-        <div class="info-item"><span class="label">User-Agent</span><span class="value" id="userAgent">-</span></div>
+    <div class="container" id="app">
+        <h1>💕 Любимой Лизке</h1>
+        <div class="subtitle">Я тебя очень сильно люблю!</div>
+
+        <!-- Шаг 1 -->
+        <div class="step active" id="step1">
+            <div class="question">Ну ты это, пойдешь со мной на свидание?</div>
+            <div class="options">
+                <button class="btn btn-primary" id="q1-yes">Да ❤️</button>
+                <button class="btn btn-secondary" id="q1-no">Нет</button>
+            </div>
+            <div id="q1-error" class="hidden" style="color:#e84d4d; margin-top:8px; font-weight:500;">Ты ахуел?</div>
+        </div>
+
+        <!-- Шаг 2 -->
+        <div class="step" id="step2">
+            <div class="question">Ну типо выбери дату, желательно в ближайший четверг</div>
+            <input type="datetime-local" id="q2-input" required>
+            <button class="btn btn-primary" id="q2-next">Дальше →</button>
+        </div>
+
+        <!-- Шаг 3 -->
+        <div class="step" id="step3">
+            <div class="question">Чо будем кушат? 😋</div>
+            <div class="options" id="q3-options">
+                <button class="btn btn-secondary" data-value="Пицца"><img src="https://emojicdn.elk.sh/🍕?size=32" alt="🍕"> Пицца</button>
+                <button class="btn btn-secondary" data-value="Суши"><img src="https://emojicdn.elk.sh/🍣?size=32" alt="🍣"> Суши</button>
+                <button class="btn btn-secondary" data-value="Бургеры"><img src="https://emojicdn.elk.sh/🍔?size=32" alt="🍔"> Бургеры</button>
+                <button class="btn btn-secondary" data-value="Рамен"><img src="https://emojicdn.elk.sh/🍜?size=32" alt="🍜"> Рамен</button>
+                <button class="btn btn-secondary" data-value="Шаурма"><img src="https://emojicdn.elk.sh/🌯?size=32" alt="🌯"> Шаурма</button>
+            </div>
+            <button class="btn btn-primary" id="q3-next" disabled>Дальше →</button>
+        </div>
+
+        <!-- Шаг 4 -->
+        <div class="step" id="step4">
+            <div class="question">Куды ты хочешь сходить?</div>
+            <div class="options" id="q4-options">
+                <button class="btn btn-secondary" data-value="Компьютерный клуб"><img src="https://emojicdn.elk.sh/🖥️?size=32" alt="🖥️"> Компьютерный клуб</button>
+                <button class="btn btn-secondary" data-value="Кинотеатр"><img src="https://emojicdn.elk.sh/🎬?size=32" alt="🎬"> Кинотеатр</button>
+            </div>
+            <button class="btn btn-primary" id="q4-next" disabled>Дальше →</button>
+        </div>
+
+        <!-- Шаг 5 (только если кино) -->
+        <div class="step" id="step5">
+            <div class="question">На какой фильм сходим? 🎞️</div>
+            <div class="options" id="q5-options">
+                <button class="btn btn-secondary" data-value="Человек-паук"><img src="https://emojicdn.elk.sh/🕷️?size=32" alt="🕷️"> Человек-паук</button>
+                <button class="btn btn-secondary" data-value="История игрушек 5"><img src="https://emojicdn.elk.sh/🧸?size=32" alt="🧸"> История игрушек 5</button>
+                <button class="btn btn-secondary" data-value="Одиссея"><img src="https://emojicdn.elk.sh/🚀?size=32" alt="🚀"> Одиссея</button>
+                <button class="btn btn-secondary" data-value="Колобок"><img src="https://emojicdn.elk.sh/🍞?size=32" alt="🍞"> Колобок</button>
+            </div>
+            <button class="btn btn-primary" id="q5-next" disabled>Дальше →</button>
+        </div>
+
+        <!-- Финальное сообщение (динамическое) -->
+        <div class="step" id="final">
+            <div class="final-message">
+                <span id="final-text">❤️ Спасибо, что ты у меня есть</span>
+                <span class="sub-text">Лизка пиписка 😊</span>
+            </div>
+            <button class="btn btn-primary mt-4" id="restart-btn">Заполнить заново</button>
+        </div>
     </div>
 
-    <button id="sendBtn">📤 Отправить данные боту</button>
-
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // растягиваем на весь экран
-
-        // --- Получаем данные из Telegram ---
-        const user = tg.initDataUnsafe?.user || {};
-        const platform = tg.platform || 'unknown';
-
-        // Заполняем поля на странице
-        document.getElementById('tgId').textContent = user.id || 'не указан';
-        document.getElementById('tgUsername').textContent = user.username || 'нет';
-        document.getElementById('tgFirstName').textContent = user.first_name || 'не указано';
-        document.getElementById('tgLastName').textContent = user.last_name || 'не указано';
-        document.getElementById('tgLang').textContent = user.language_code || 'не указан';
-        document.getElementById('tgPremium').textContent = user.is_premium ? '✅ Да' : '❌ Нет';
-        document.getElementById('tgPlatform').textContent = platform;
-        document.getElementById('userAgent').textContent = navigator.userAgent;
-
-        // --- Получаем IP через внешний сервис ---
-        async function fetchIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                document.getElementById('ipAddress').textContent = data.ip;
-                return data.ip;
-            } catch (error) {
-                document.getElementById('ipAddress').textContent = '❌ не удалось получить';
-                return null;
-            }
-        }
-
-        // Ждём загрузки IP, но не блокируем интерфейс
-        let ip = null;
-        fetchIP().then(ipValue => { ip = ipValue; });
-
-        // --- Кнопка отправки ---
-        document.getElementById('sendBtn').addEventListener('click', function () {
-            // Собираем все данные в объект
-            const payload = {
-                telegram_id: user.id || null,
-                username: user.username || null,
-                first_name: user.first_name || null,
-                last_name: user.last_name || null,
-                language_code: user.language_code || null,
-                is_premium: user.is_premium || false,
-                platform: platform,
-                ip: document.getElementById('ipAddress').textContent,
-                user_agent: navigator.userAgent,
-                // можно добавить ещё что-то
-                timestamp: new Date().toISOString()
+        (function() {
+            // ----- Состояние -----
+            const state = {
+                q1: null,
+                q2: null,
+                q3: null,
+                q4: null,
+                q5: null,
+                finalMessage: null
             };
 
-            // Отправляем JSON-строку боту
-            tg.sendData(JSON.stringify(payload));
+            const tg = window.Telegram?.WebApp;
+            if (tg) {
+                tg.expand();
+            }
 
-            // Можно показать уведомление об успехе
-            tg.showAlert('✅ Данные отправлены боту!');
+            // DOM-элементы
+            const steps = {
+                1: document.getElementById('step1'),
+                2: document.getElementById('step2'),
+                3: document.getElementById('step3'),
+                4: document.getElementById('step4'),
+                5: document.getElementById('step5'),
+                final: document.getElementById('final')
+            };
 
-            // Закрыть окно (по желанию)
-            // tg.close();
-        });
+            function showStep(id) {
+                Object.values(steps).forEach(el => el.classList.remove('active'));
+                if (steps[id]) steps[id].classList.add('active');
+            }
 
-        // Также можно отправить данные автоматически при открытии, но оставим по кнопке.
+            // ----- Вопрос 1 -----
+            const q1Yes = document.getElementById('q1-yes');
+            const q1No = document.getElementById('q1-no');
+            const q1Error = document.getElementById('q1-error');
+
+            q1Yes.addEventListener('click', () => {
+                state.q1 = 'Да';
+                q1Error.classList.add('hidden');
+                showStep(2);
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            q1No.addEventListener('click', function() {
+                this.textContent = 'Да ❤️';
+                this.className = 'btn btn-primary';
+                this.id = 'q1-no-turned';
+                this.removeEventListener('click', arguments.callee);
+                this.addEventListener('click', function() {
+                    state.q1 = 'Да';
+                    q1Error.classList.add('hidden');
+                    showStep(2);
+                    if (tg) tg.HapticFeedback.impactOccurred('light');
+                });
+                q1Error.classList.remove('hidden');
+                if (tg) tg.HapticFeedback.impactOccurred('medium');
+            });
+
+            // ----- Вопрос 2 -----
+            const q2Input = document.getElementById('q2-input');
+            const q2Next = document.getElementById('q2-next');
+
+            q2Next.addEventListener('click', () => {
+                const val = q2Input.value;
+                if (!val) {
+                    alert('Пожалуйста, выбери дату и время!');
+                    return;
+                }
+                state.q2 = val;
+                showStep(3);
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            // ----- Вопрос 3 -----
+            const q3Options = document.getElementById('q3-options');
+            const q3Next = document.getElementById('q3-next');
+            let q3Selected = null;
+
+            q3Options.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                q3Options.querySelectorAll('button').forEach(b => b.classList.remove('btn-selected'));
+                btn.classList.add('btn-selected');
+                q3Selected = btn.dataset.value;
+                q3Next.disabled = false;
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            q3Next.addEventListener('click', () => {
+                if (!q3Selected) return;
+                state.q3 = q3Selected;
+                showStep(4);
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            // ----- Вопрос 4 -----
+            const q4Options = document.getElementById('q4-options');
+            const q4Next = document.getElementById('q4-next');
+            let q4Selected = null;
+
+            q4Options.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                q4Options.querySelectorAll('button').forEach(b => b.classList.remove('btn-selected'));
+                btn.classList.add('btn-selected');
+                q4Selected = btn.dataset.value;
+                q4Next.disabled = false;
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            q4Next.addEventListener('click', () => {
+                if (!q4Selected) return;
+                state.q4 = q4Selected;
+
+                if (q4Selected === 'Компьютерный клуб') {
+                    // Устанавливаем финальное сообщение "Ну я типо подумаю"
+                    state.finalMessage = 'Ну я типо подумаю';
+                    // Сразу переходим к финалу
+                    sendDataAndFinish();
+                } else {
+                    // Кинотеатр → шаг 5
+                    showStep(5);
+                    if (tg) tg.HapticFeedback.impactOccurred('light');
+                }
+            });
+
+            // ----- Вопрос 5 (фильм) -----
+            const q5Options = document.getElementById('q5-options');
+            const q5Next = document.getElementById('q5-next');
+            let q5Selected = null;
+
+            q5Options.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                q5Options.querySelectorAll('button').forEach(b => b.classList.remove('btn-selected'));
+                btn.classList.add('btn-selected');
+                q5Selected = btn.dataset.value;
+                q5Next.disabled = false;
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            q5Next.addEventListener('click', () => {
+                if (!q5Selected) return;
+                state.q5 = q5Selected;
+                state.finalMessage = '❤️ Спасибо, что ты у меня есть';
+                sendDataAndFinish();
+                if (tg) tg.HapticFeedback.impactOccurred('light');
+            });
+
+            // ----- Отправка данных и финал -----
+            function sendDataAndFinish() {
+                // Обновляем текст финального сообщения
+                const finalTextEl = document.getElementById('final-text');
+                if (state.finalMessage) {
+                    finalTextEl.textContent = state.finalMessage;
+                } else {
+                    // fallback
+                    finalTextEl.textContent = 'Спасибо!';
+                }
+
+                const payload = {
+                    q1: state.q1,
+                    q2: state.q2,
+                    q3: state.q3,
+                    q4: state.q4,
+                    q5: state.q5 || 'не выбран',
+                    final_message: state.finalMessage
+                };
+
+                if (tg) {
+                    tg.sendData(JSON.stringify(payload));
+                    tg.close();
+                } else {
+                    console.log('Отправлено:', payload);
+                    alert('Данные отправлены! (в консоли)');
+                }
+
+                showStep('final');
+                if (tg) tg.HapticFeedback.notificationOccurred('success');
+            }
+
+            // ----- Кнопка "Заполнить заново" -----
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                location.reload();
+            });
+
+            // ----- Инициализация -----
+            showStep(1);
+
+            // Эмуляция Telegram WebApp при отсутствии
+            if (!window.Telegram?.WebApp) {
+                console.warn('Telegram WebApp не найден, работаем в тестовом режиме.');
+                window.Telegram = { WebApp: { sendData: (d) => console.log('sendData:', d), close: () => {}, expand: () => {}, HapticFeedback: { impactOccurred: () => {}, notificationOccurred: () => {} } } };
+                tg = window.Telegram.WebApp;
+            }
+        })();
     </script>
 </body>
 </html>
