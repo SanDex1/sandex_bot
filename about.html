@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#1b1019">
+	<title>О Ксюше — топ-1 девочка</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header class="topbar page">
+		<a class="brand" href="sute.html"><span class="brand-mark" aria-hidden="true">К.</span><span>Ксюша</span></a>
+		<nav aria-label="Основная навигация">
+			<a class="is-active" aria-current="page" href="about.html">О Ксюше</a>
+			<a href="facts.html">Топ-факты</a>
+			<a class="nav-contact" href="contact.html">Комплимент <span aria-hidden="true">↗</span></a>
+		</nav>
+	</header>
+	<main>
+		<section class="subpage-hero page">
+			<div class="eyebrow">Досье // главная героиня</div>
+			<h1>Это<br><span>Ксюша.</span></h1>
+			<p class="hero-copy">Ксюша — тот самый человек, рядом с которым обычный день внезапно становится историей, которую хочется пересказать. Эта страница — маленький неоновый фан-клуб и шуточное досье.</p>
+		</section>
+		<section class="info-grid page" aria-label="Шуточные факты о Ксюше">
+			<article class="info-item"><span class="service-number">01 / АТМОСФЕРА</span><h2>В комнате стало лучше</h2><p>Научно не доказано. Друзья всё равно замечают сразу.</p></article>
+			<article class="info-item"><span class="service-number">02 / СТИЛЬ</span><h2>Попадание с первого раза</h2><p>Даже случайный образ выглядит так, будто всё было задумано.</p></article>
+			<article class="info-item"><span class="service-number">03 / МАСШТАБ</span><h2>Главная героиня</h2><p>Побочные квесты подождут: у Ксюши сейчас сюжетная арка.</p></article>
+		</section>
+		<section class="contact page page-cta">
+			<div><div class="section-kicker">Подтверждено вселенной</div><h2>Ксюша — топ-1. Вопрос закрыт.</h2></div>
+			<a class="button" href="facts.html">Все факты <span aria-hidden="true">↗</span></a>
+		</section>
+	</main>
+	<footer class="page">
+		<a class="brand" href="sute.html"><span class="brand-mark" aria-hidden="true">К.</span><span>Ксюша</span></a>
+		<span class="footer-note">© <span class="year"></span> Ксюша · Топ-1 без конкурса</span>
+	</footer>
+	<script>document.querySelectorAll(".year").forEach((item) => item.textContent = new Date().getFullYear());</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+	<script src="three-background.js" defer></script>
+	<script src="cursor.js" defer></script>
+</body>
+</html>
